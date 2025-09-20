@@ -3,6 +3,12 @@ name = "player-matching"
 packages = [{include = "player_matching", from = "source"}]
 version = "0.0.1"
 
+[tool.poetry.dependencies]
+openpyxl = "^3.1.5"
+pyswip = "^0.3.3"
+python = "^3.13"
+pytest = "^8.4.2"
+
 [build-system]
 build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -12,6 +18,7 @@ line-length = 120
 
 [tool.isort]
 include_trailing_comma = true
+known_first_party = ['player_matching', 'tests']
 line_length = 120
 multi_line_output = 3
 
