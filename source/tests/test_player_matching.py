@@ -2,7 +2,7 @@ import pytest
 from pyswip import Prolog
 
 from player_matching.data_types import GameMode, Match, Player, Team
-from player_matching.main import load_competition_state
+from player_matching.main import add_competition_state
 from player_matching.prolog_interface import find_best_assignment
 
 
@@ -28,7 +28,7 @@ def test_example_assignment(prolog: Prolog) -> None:
     team_b.add_player(Player(name="b3", wins=7, game_mode=GameMode.ANY, history=[]))
     team_b.add_player(Player(name="b4", wins=7, game_mode=GameMode.DROP, history=[]))
 
-    load_competition_state(prolog=prolog, teams=[team_a, team_b])
+    add_competition_state(prolog=prolog, teams=[team_a, team_b])
     matches = find_best_assignment(prolog=prolog, team_a=team_a, team_b=team_b)
 
     assert matches is not None

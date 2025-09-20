@@ -1,11 +1,13 @@
 from pyswip import Prolog
 
-from player_matching.data_types import GameMode, Player, Team
+from player_matching.data_types import Team
 from player_matching.prolog_interface import add_bye, add_player, find_best_assignment, reset_prolog_state
+from player_matching.settings import general_settings
+from player_matching.xlsx_interface import load_match_data_from_xlsx, load_team_data_from_xlsx, write_next_round_to_xlsx
 
 
-def load_competition_state(prolog: Prolog, teams: list[Team]):
-    """Load players and byes into Prolog facts via prolog_interface."""
+def add_competition_state(prolog: Prolog, teams: list[Team]):
+    """Add competition state to Prolog."""
     reset_prolog_state(prolog)
 
     [add_player(prolog=prolog, player=player, unsafe_team=team.name) for team in teams for player in team.players]
@@ -14,27 +16,20 @@ def load_competition_state(prolog: Prolog, teams: list[Team]):
 
 
 if __name__ == "__main__":
+
     prolog = Prolog()
     prolog.consult("./matcher.pl", relative_to=__file__)
 
-    team_a = Team("Team A")
-    team_a.add_player(Player(name="a1", wins=10, game_mode=GameMode.CORE, history=["b1"]))
-    team_a.add_player(Player(name="a2", wins=5, game_mode=GameMode.ANY, history=[]))
-    team_a.add_player(Player(name="a3", wins=8, game_mode=GameMode.ANY, history=["b2"]))
-    team_a.add_player(Player(name="a4", wins=8, game_mode=GameMode.ANY, history=[], had_bye=True))
+    teams = load_team_data_from_xlsx(file_name=general_settings.xlsx_name, team_names=general_settings.team_names)
+    load_match_data_from_xlsx(file_name=general_settings.xlsx_name, teams=teams)
 
-    team_b = Team("Team B")
-    team_b.add_player(Player(name="b1", wins=9, game_mode=GameMode.CORE, history=["a1"]))
-    team_b.add_player(Player(name="b2", wins=4, game_mode=GameMode.ANY, history=["a3"]))
-    team_b.add_player(Player(name="b3", wins=7, game_mode=GameMode.ANY, history=[]))
-    team_b.add_player(Player(name="b4", wins=7, game_mode=GameMode.DROP, history=[]))
-
-    load_competition_state(prolog=prolog, teams=[team_a, team_b])
-    matches = find_best_assignment(prolog=prolog, team_a=team_a, team_b=team_b)
+    add_competition_state(prolog=prolog, teams=teams)
+    matches = find_best_assignment(prolog=prolog, team_a=teams[0], team_b=teams[1])
 
     if matches:
         print("\nRegular matches:")
         for match in matches:
             print(f"  {match.player_1} vs {match.player_2} ({match.game_mode.value})")
+        write_next_round_to_xlsx(file_name=general_settings.xlsx_name, matches=matches)
     else:
         print("No valid assignment found!")

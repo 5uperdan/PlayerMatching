@@ -8,6 +8,8 @@ openpyxl = "^3.1.5"
 pyswip = "^0.3.3"
 python = "^3.13"
 pytest = "^8.4.2"
+pydantic = "^2.11.9"
+pydantic-settings = "^2.10.1"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"

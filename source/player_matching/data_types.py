@@ -2,21 +2,22 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Optional
 
+from pydantic import BaseModel, Field
+
 
 class GameMode(Enum):
     CORE = "core"
-    MOVIE = "movie"
+    FRANCHISE = "franchise"
     ANY = "any"
     DROP = "drop"
     BYE = "bye"
 
 
-@dataclass
-class Player:
+class Player(BaseModel):
     name: str
     game_mode: GameMode
     wins: int = 0  # match (not round) wins
-    history: list[str] = field(default_factory=list[str])  # names of players faced before
+    history: list[str] = Field(default_factory=list)  # names of players faced before
     had_bye: bool = False  # has this player had a bye before
 
 
@@ -27,6 +28,7 @@ class Team:
 
     def add_player(self, player: Player):
         """Add a player to the team."""
+        player.name = player.name.lower()
         self._players[player.name] = player
 
     @property
@@ -40,8 +42,7 @@ class Team:
         return sum(player.wins for player in self.players)
 
 
-@dataclass
-class Match:
+class Match(BaseModel):
     """Represents a single match between two players or a bye."""
 
     game_mode: GameMode
@@ -52,3 +53,11 @@ class Match:
     def is_bye(self) -> bool:
         """Return True if this is a bye match."""
         return self.player_2 is None
+
+
+class MatchResult(BaseModel):
+    player_1_name: str
+    player_2_name: Optional[str]
+    game_mode: GameMode
+    player_a_wins: int
+    player_b_wins: int
