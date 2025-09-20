@@ -31,7 +31,11 @@ valid_pair(Player, bye, 0, none, Team, _) :-
 
 % Generate all possible assignments where each player gets exactly one assignment
 generate_assignment(AllPlayers, Assignments) :-
-    generate_assignment_aux(AllPlayers, [], Assignments).
+    generate_assignment_aux(AllPlayers, [], Assignments),
+    % Declarative constraint: at most 1 bye in the entire assignment
+    findall(1, member(pair(_, bye, _), Assignments), Byes),
+    length(Byes, NumByes),
+    NumByes =< 1.
 
 % Base case: no more players to assign
 generate_assignment_aux([], Assignments, Assignments).
