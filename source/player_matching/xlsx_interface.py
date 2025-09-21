@@ -83,7 +83,7 @@ def load_match_data_from_xlsx(file_name: str, teams: list[Team]) -> None:
                     player_1_name=player_name_a,
                     player_2_name=None,
                     game_mode=GameMode.BYE,
-                    player_a_wins=w_a,
+                    player_a_wins=0,
                     player_b_wins=0,
                 )
 

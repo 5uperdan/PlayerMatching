@@ -26,6 +26,9 @@ if __name__ == "__main__":
     add_competition_state(prolog=prolog, teams=teams)
     matches = find_best_assignment(prolog=prolog, team_a=teams[0], team_b=teams[1])
 
+    for team in teams:
+        print(f"{team.name}: {team.score} points")
+
     if matches:
         print("\nRegular matches:")
         for match in matches:
